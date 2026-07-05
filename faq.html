@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HM Sports - FAQ / Help Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="faq.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand logo" href="#">
+                <img src="images/hmlogo.png" alt="HM Sports Logo" class="header-logo" width="70px">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="faq.html">FAQ</a>
+                    </li>
+                </ul>
+
+                <form class="d-flex search-bar" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search products..." aria-label="Search">
+                        <button class="btn" type="button">🔍</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <section class="faq-container">
+            <h2 class="text-center fw-bold mb-3">Frequently Asked Questions</h2>
+            
+            <p class="intro-text text-center mb-5">
+                Find quick answers below. If you need more help, please visit our <a href="contact.html" class="fw-bold text-decoration-none" style="color: var(--primary-color);">Contact Us</a> page.
+            </p>
+
+            <div class="faq-category mb-5">
+                <h3>Shipping & Delivery</h3>
+                <div class="accordion" id="accordionShipping">
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                <strong>Q: What are your shipping times?</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionShipping">
+                            <div class="accordion-body">
+                                A: Standard delivery takes 3-5 business days. Express options are available for 1-2 day delivery at an additional cost.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                <strong>Q: Do you offer free shipping?</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionShipping">
+                            <div class="accordion-body">
+                                A: Yes, we offer free standard shipping on all orders over R.s 5,000.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                <strong>Q: Can I track my order?</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionShipping">
+                            <div class="accordion-body">
+                                A: Absolutely. Once your order ships, you will receive an email with a tracking number and link to the carrier's website.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-category mb-5">
+                <h3>Returns & Warranty</h3>
+                <div class="accordion" id="accordionReturns">
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                <strong>Q: What is your return policy?</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionReturns">
+                            <div class="accordion-body">
+                                A: We accept returns within 30 days of delivery, provided the item is unused, in its original packaging, and has all tags attached.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                                <strong>Q: How long do warranties last?</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionReturns">
+                            <div class="accordion-body">
+                                A: Most equipment, such as cricket bats and tennis rackets, comes with a 90-day manufacturer warranty against defects. Please check the product page for specifics.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-category mb-5">
+                <h3>Product & Sizing</h3>
+                <div class="accordion" id="accordionProduct">
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix">
+                                <strong>Q: How do I find the correct size for apparel?</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#accordionProduct">
+                            <div class="accordion-body">
+                                A: We include a detailed sizing chart on every apparel product page. You can also contact us if you need personalized assistance.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven">
+                                <strong>Q: Are your products authentic?</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#accordionProduct">
+                            <div class="accordion-body">
+                                A: Yes. HM Sports only sources directly from authorized distributors and manufacturers, guaranteeing 100% authentic and genuine sports gear.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="text-center py-4 mt-5">
+        <p>&copy; 2025 HM Sports. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

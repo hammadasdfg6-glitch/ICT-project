@@ -1,0 +1,55 @@
+
+
+.contact-container h2 {
+    color: var(--dark-text);
+}
+
+.contact-form,
+.contact-info {
+    background-color: var(--light-bg);
+
+}
+
+.contact-form h3,
+.contact-info h3 {
+    color: var(--primary-color);
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+
+.contact-form label {
+    font-weight: bold; 
+}
+
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(149, 214, 0, 0.25); 
+}
+
+
+.submit-button {
+    background-color: var(--accent-color); 
+    color: var(--primary-color); 
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 12px;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #222222; 
+    color: var(--primary-color);
+}
+
+
+.details p {
+    font-size: 1.05em;
+}
+
+
+.map-placeholder {
+    background-color: #e0e0e0;
+}

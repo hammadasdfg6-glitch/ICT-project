@@ -1,0 +1,110 @@
+
+:root {
+    --primary-color: #95D600;    
+    --accent-color: #333333;
+    --dark-text: #333333;       
+    --light-bg: #FFFFFF;         
+    --dark-bg: #333333;          
+}
+
+body {
+    font-family: arial, sans-serif;
+    background-color: #f4f4f4;
+    color: var(--dark-text);
+}
+
+h1, h2, h3 {
+    color: var(--dark-text);
+}
+
+
+.navbar {
+    background-color: var(--light-bg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.header-logo {
+    height: 50px;
+    width: auto;
+}
+
+.navbar-nav .nav-link {
+    color: var(--dark-text) !important;
+    font-weight: bold;
+    margin: 0 10px;
+    padding-bottom: 5px;
+    transition: color 0.3s;
+    border-bottom: 2px solid transparent; 
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.search-bar .form-control {
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+}
+
+.search-bar .form-control:focus {
+    box-shadow: none;
+    border-color: var(--primary-color);
+}
+
+.search-bar .btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+}
+
+.search-bar .btn:hover {
+    background-color: #222;
+    color: var(--primary-color);
+}
+
+
+.hero {
+    background-color: var(--primary-color);
+    color: var(--light-bg);
+}
+
+.hero h2 {
+    color: var(--light-bg); 
+}
+
+.hero .cta-button {
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.hero .cta-button:hover {
+    background-color: #28a745; 
+    color: white;
+}
+
+.category-card {
+    background-color: var(--dark-bg);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+    border-top: 5px solid var(--primary-color);
+    border-bottom: 5px solid var(--primary-color);
+    color: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer {
+    background-color: var(--dark-text);
+    color: #cccccc;
+}
