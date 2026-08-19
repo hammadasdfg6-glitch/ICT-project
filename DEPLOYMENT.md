@@ -58,23 +58,27 @@ FRONTEND_URL=https://your-frontend-app.vercel.app
 
 ---
 
-## ⚡ Part 3: Deploy Frontend to Vercel
+## ⚡ Part 3: Deploy Frontend to Vercel (Frontend Folder Approach)
 
 ### Step 1: Import Project to Vercel
 1. Log in to [Vercel Dashboard](https://vercel.com/dashboard).
 2. Click **Add New...** ➔ **Project**.
 3. Import your GitHub repository (`hammadasdfg6-glitch/ICT-project`).
 
-### Step 2: Add `BACKEND_URL` Environment Variable in Vercel
-Under the **Environment Variables** section in Vercel:
+### Step 2: Configure Root Directory
+1. On the configuration screen, find **Root Directory** and click **Edit**.
+2. Select the **`frontend`** folder.
+3. Keep **Framework Preset** as **Other**.
 
-| Variable | Value | Description |
-| :--- | :--- | :--- |
-| `BACKEND_URL` | `https://your-backend.up.railway.app` | Your Railway (or Render) backend URL |
+### Step 3: Set Backend URL in `frontend/config.js`
+In `frontend/config.js`, enter your live Railway (or Render) backend URL:
+```javascript
+window.__ENV__ = {
+    BACKEND_URL: "https://<your-service>.up.railway.app"
+};
+```
 
-> 💡 **Super Easy**: Whenever you switch between Railway and Render, simply update this single `BACKEND_URL` environment variable in your Vercel Dashboard!
-
-### Step 3: Deploy
+### Step 4: Deploy
 1. Click **Deploy**.
 2. Once Vercel deploys (e.g. `https://hmsports.vercel.app`), update `FRONTEND_URL` in your Railway/Render variables.
 
