@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to Swagger API Docs - HM Sports</title>
+    <script src="config.js"></script>
+    <script>
+        const backend = (window.__ENV__ && window.__ENV__.BACKEND_URL) 
+            ? window.__ENV__.BACKEND_URL.replace(/\/$/, "") 
+            : "https://hmsports-backend-production.up.railway.app";
+        window.location.replace(backend + "/api-docs");
+    </script>
+</head>
+<body style="background:#111; color:#fff; font-family:sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;">
+    <div style="text-align:center;">
+        <h2 style="color:#95d600;">Opening Swagger API Docs...</h2>
+        <p>If you are not redirected automatically, <a href="https://hmsports-backend-production.up.railway.app/api-docs" style="color:#95d600; font-weight:bold;">click here</a>.</p>
+    </div>
+</body>
+</html>
