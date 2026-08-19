@@ -1,67 +1,64 @@
 ﻿{
-  "version": 2,
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/user/(.*)",
-      "dest": "/api/user/$1"
+      "source": "/user/:path*",
+      "destination": "/api/user/:path*"
     },
     {
-      "src": "/user",
-      "dest": "/api/user"
+      "source": "/user",
+      "destination": "/api/user"
     },
     {
-      "src": "/product/(.*)",
-      "dest": "/api/product/$1"
+      "source": "/product/:path*",
+      "destination": "/api/product/:path*"
     },
     {
-      "src": "/product",
-      "dest": "/api/product"
+      "source": "/product",
+      "destination": "/api/product"
     },
     {
-      "src": "/buy/(.*)",
-      "dest": "/api/buy/$1"
+      "source": "/buy/:path*",
+      "destination": "/api/buy/:path*"
     },
     {
-      "src": "/buy",
-      "dest": "/api/buy"
+      "source": "/buy",
+      "destination": "/api/buy"
     },
     {
-      "src": "/order/(.*)",
-      "dest": "/api/order/$1"
+      "source": "/order/:path*",
+      "destination": "/api/order/:path*"
     },
     {
-      "src": "/order",
-      "dest": "/api/order"
+      "source": "/order",
+      "destination": "/api/order"
     },
     {
-      "src": "/webhook",
-      "dest": "/api/webhook"
+      "source": "/webhook",
+      "destination": "/api/webhook"
     },
     {
-      "src": "/health",
-      "dest": "/api/health"
+      "source": "/health",
+      "destination": "/api/health"
     },
     {
-      "src": "/api-docs/(.*)",
-      "dest": "/api/api-docs/$1"
+      "source": "/api-docs/:path*",
+      "destination": "/api/api-docs/:path*"
     },
     {
-      "src": "/api-docs",
-      "dest": "/api/api-docs"
+      "source": "/api-docs",
+      "destination": "/api/api-docs"
     },
     {
-      "src": "/api-docs.json",
-      "dest": "/api/api-docs.json"
+      "source": "/api-docs.json",
+      "destination": "/api/api-docs.json"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "source": "/",
+      "destination": "/frontend/index.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "source": "/:match*",
+      "destination": "/frontend/:match*"
     }
   ]
 }
