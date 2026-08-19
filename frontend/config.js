@@ -1,6 +1,4 @@
-﻿// HM Sports Runtime Configuration
-// When deployed on Vercel, enter your Railway (or Render) backend URL below:
-// Example: BACKEND_URL: "https://your-service.up.railway.app"
+// HM Sports Runtime Configuration
 window.__ENV__ = {
-    BACKEND_URL: ""
+    BACKEND_URL: "https://hmsports-backend-production.up.railway.app"
 };
