@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HM Sports - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-nav .nav-link {
+            font-weight: bold;
+            color: var(--dark-text);
+            border-radius: 6px;
+            padding: 10px 16px;
+        }
+        .admin-nav .nav-link.active {
+            background-color: var(--accent-color);
+            color: var(--primary-color) !important;
+        }
+        .preview-box {
+            width: 100%;
+            height: 180px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            overflow: hidden;
+        }
+        .preview-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand logo" href="index.html">
+                <img src="images/hmlogo.png" alt="HM Sports Logo" class="header-logo" width="70px">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold text-primary" href="admin.html">⚙️ Admin Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-success" href="/api-docs" target="_blank">📖 Swagger API Docs</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    <div id="auth-nav-container"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ADMIN CONTENT -->
+    <main class="container my-5" style="min-height: 65vh;">
+        
+        <!-- Guard for non-admin -->
+        <div id="admin-guard-msg" class="d-none card shadow-sm p-5 text-center my-4 border-0">
+            <h3 class="text-danger fw-bold mb-3">⛔ Access Restricted</h3>
+            <p class="text-muted fs-5 mb-4">You must be logged in as an <strong>Admin</strong> to view this dashboard.</p>
+            <div>
+                <a href="index.html" class="btn btn-hm-primary px-4 py-2">Back to Home</a>
+            </div>
+        </div>
+
+        <div id="admin-content" class="d-none">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <div>
+                    <h2 class="fw-bold mb-1">⚙️ Admin Management Portal</h2>
+                    <p class="text-muted mb-0">Upload products to Cloudinary, manage inventory, and update order statuses.</p>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-pills admin-nav mb-4 gap-2" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="add-prod-tab" data-bs-toggle="pill" data-bs-target="#tab-add-prod" type="button" role="tab">➕ Add New Product</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="orders-tab" data-bs-toggle="pill" data-bs-target="#tab-orders" type="button" role="tab">📋 Customer Orders (<span id="orders-count">0</span>)</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="inventory-tab" data-bs-toggle="pill" data-bs-target="#tab-inventory" type="button" role="tab">📦 Product Inventory</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="adminTabsContent">
+                
+                <!-- 1. ADD PRODUCT TAB -->
+                <div class="tab-pane fade show active" id="tab-add-prod" role="tabpanel">
+                    <div class="card shadow-sm border-0 p-4" style="border-radius: 8px;">
+                        <h4 class="fw-bold mb-3">Upload Product to Cloudinary & Catalog</h4>
+                        
+                        <div class="alert alert-success d-none" id="add-prod-success"></div>
+                        <div class="alert alert-danger d-none" id="add-prod-error"></div>
+
+                        <form id="add-product-form" enctype="multipart/form-data">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Product Name *</label>
+                                    <input type="text" class="form-control" name="name" required placeholder="e.g. Pro Willow Cricket Bat">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Category *</label>
+                                    <select class="form-select" name="category" required>
+                                        <option value="Cricket">Cricket</option>
+                                        <option value="Football">Football</option>
+                                        <option value="Basketball">Basketball</option>
+                                        <option value="Running">Running</option>
+                                        <option value="Yoga">Yoga</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Price (PKR) *</label>
+                                    <input type="number" class="form-control" name="price" required min="1" placeholder="1850">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Stock Quantity *</label>
+                                    <input type="number" class="form-control" name="quantity" required min="0" value="10">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Status *</label>
+                                    <select class="form-select" name="status">
+                                        <option value="available">Available / In Stock</option>
+                                        <option value="Out of Stock">Out of Stock</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Description</label>
+                                    <textarea class="form-control" name="description" rows="3" placeholder="Describe the sports equipment material, durability, and features..."></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Product Photo (Uploads to Cloudinary) *</label>
+                                    <input type="file" class="form-control" name="image" id="prod-image-input" accept="image/*" required>
+                                    <div class="form-text text-muted">Supports JPG, PNG, WEBP. Resized & optimized automatically.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Photo Preview</label>
+                                    <div class="preview-box" id="preview-container">
+                                        <span class="text-muted small">Select an image to preview</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-hm-primary px-5 py-2 fs-6" id="upload-prod-btn">
+                                        🚀 Upload & Save Product
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 2. CUSTOMER ORDERS TAB -->
+                <div class="tab-pane fade" id="tab-orders" role="tabpanel">
+                    <div class="card shadow-sm border-0 p-4" style="border-radius: 8px;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold mb-0">Customer Orders Management</h4>
+                            <div class="d-flex gap-2">
+                                <select class="form-select form-select-sm" id="order-status-filter" style="width: 160px;">
+                                    <option value="all">Filter: All Statuses</option>
+                                    <option value="confirmed">🟡 Confirmed</option>
+                                    <option value="shipping">🔵 Shipping</option>
+                                    <option value="delivering">🟠 Delivering</option>
+                                    <option value="delivered">🟢 Delivered</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Order ID</th>
+                                        <th>Customer Email</th>
+                                        <th>Items Ordered</th>
+                                        <th>Delivery Address</th>
+                                        <th>Total</th>
+                                        <th>Update Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-orders-tbody">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading orders...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. INVENTORY MANAGEMENT TAB -->
+                <div class="tab-pane fade" id="tab-inventory" role="tabpanel">
+                    <div class="card shadow-sm border-0 p-4" style="border-radius: 8px;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold mb-0">Product Catalog Inventory</h4>
+                            <button class="btn btn-sm btn-outline-dark" id="refresh-inventory-btn">🔄 Refresh Catalog</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-inventory-tbody">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading products...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- EDIT PRODUCT MODAL -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="editProductModalLabel">✏️ Edit Product Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-success d-none" id="edit-prod-success"></div>
+                    <div class="alert alert-danger d-none" id="edit-prod-error"></div>
+
+                    <form id="edit-product-form" enctype="multipart/form-data">
+                        <input type="hidden" name="_id" id="edit-prod-id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Product Name *</label>
+                                <input type="text" class="form-control" name="name" id="edit-prod-name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Category *</label>
+                                <select class="form-select" name="category" id="edit-prod-category" required>
+                                    <option value="Cricket">Cricket</option>
+                                    <option value="Football">Football</option>
+                                    <option value="Basketball">Basketball</option>
+                                    <option value="Running">Running</option>
+                                    <option value="Yoga">Yoga</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Price (PKR) *</label>
+                                <input type="number" class="form-control" name="price" id="edit-prod-price" required min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Stock Quantity *</label>
+                                <input type="number" class="form-control" name="quantity" id="edit-prod-qty" required min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Status *</label>
+                                <select class="form-select" name="status" id="edit-prod-status">
+                                    <option value="available">Available / In Stock</option>
+                                    <option value="Out of Stock">Out of Stock</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Description</label>
+                                <textarea class="form-control" name="description" id="edit-prod-desc" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold">Replace Photo (Uploads to Cloudinary)</label>
+                                <input type="file" class="form-control" name="image" id="edit-prod-image-input" accept="image/*">
+                                <div class="form-text text-muted">Leave empty to keep existing product image.</div>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">Current Photo</label>
+                                <div class="preview-box" id="edit-preview-container" style="height: 120px;">
+                                    <img id="edit-current-img" src="" alt="Current Photo">
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4 text-end">
+                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-hm-primary px-4 py-2" id="save-edit-prod-btn">
+                                    💾 Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 mt-5">
+        <p>&copy; 2025 HM Sports. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getCurrentUser();
+            const guardMsg = document.getElementById('admin-guard-msg');
+            const adminContent = document.getElementById('admin-content');
+
+            if (!user || user.role !== 'admin') {
+                guardMsg.classList.remove('d-none');
+                return;
+            }
+
+            adminContent.classList.remove('d-none');
+
+            // Image Preview Handler for Add Product
+            const imageInput = document.getElementById('prod-image-input');
+            const previewContainer = document.getElementById('preview-container');
+            if (imageInput && previewContainer) {
+                imageInput.addEventListener('change', () => {
+                    const file = imageInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewContainer.innerHTML = `<span class="text-muted small">Select an image to preview</span>`;
+                    }
+                });
+            }
+
+            // Image Preview Handler for Edit Product
+            const editImageInput = document.getElementById('edit-prod-image-input');
+            const editPreviewContainer = document.getElementById('edit-preview-container');
+            if (editImageInput && editPreviewContainer) {
+                editImageInput.addEventListener('change', () => {
+                    const file = editImageInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            editPreviewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Upload Product Form Submit
+            const addForm = document.getElementById('add-product-form');
+            const successAlert = document.getElementById('add-prod-success');
+            const errorAlert = document.getElementById('add-prod-error');
+            const submitBtn = document.getElementById('upload-prod-btn');
+
+            if (addForm) {
+                addForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    successAlert.classList.add('d-none');
+                    errorAlert.classList.add('d-none');
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = 'Uploading to Cloudinary...';
+
+                    const formData = new FormData(addForm);
+
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/product`, {
+                            method: 'POST',
+                            body: formData,
+                            credentials: 'include'
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok && data.success) {
+                            successAlert.innerText = '🎉 Product successfully uploaded to Cloudinary and added to store catalog!';
+                            successAlert.classList.remove('d-none');
+                            addForm.reset();
+                            previewContainer.innerHTML = `<span class="text-muted small">Select an image to preview</span>`;
+                            loadAdminInventory();
+                        } else {
+                            errorAlert.innerText = data.message || 'Error adding product.';
+                            errorAlert.classList.remove('d-none');
+                        }
+                    } catch (err) {
+                        console.error('Upload error:', err);
+                        errorAlert.innerText = 'Network error communicating with server.';
+                        errorAlert.classList.remove('d-none');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = '🚀 Upload & Save Product';
+                    }
+                });
+            }
+
+            // Edit Product Form Submit (PATCH /product)
+            const editForm = document.getElementById('edit-product-form');
+            const editSuccessAlert = document.getElementById('edit-prod-success');
+            const editErrorAlert = document.getElementById('edit-prod-error');
+            const editSubmitBtn = document.getElementById('save-edit-prod-btn');
+
+            if (editForm) {
+                editForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    editSuccessAlert.classList.add('d-none');
+                    editErrorAlert.classList.add('d-none');
+                    editSubmitBtn.disabled = true;
+                    editSubmitBtn.innerText = 'Saving Changes...';
+
+                    const formData = new FormData(editForm);
+
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/product`, {
+                            method: 'PATCH',
+                            body: formData,
+                            credentials: 'include'
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok && data.success) {
+                            editSuccessAlert.innerText = '✅ Product updated successfully!';
+                            editSuccessAlert.classList.remove('d-none');
+                            loadAdminInventory();
+                            setTimeout(() => {
+                                const modalEl = document.getElementById('editProductModal');
+                                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                                if (modalInstance) modalInstance.hide();
+                                editSuccessAlert.classList.add('d-none');
+                            }, 1200);
+                        } else {
+                            editErrorAlert.innerText = data.message || 'Error updating product.';
+                            editErrorAlert.classList.remove('d-none');
+                        }
+                    } catch (err) {
+                        console.error('Update error:', err);
+                        editErrorAlert.innerText = 'Network error communicating with server.';
+                        editErrorAlert.classList.remove('d-none');
+                    } finally {
+                        editSubmitBtn.disabled = false;
+                        editSubmitBtn.innerText = '💾 Save Changes';
+                    }
+                });
+            }
+
+            // Load Orders Tab
+            let allOrdersList = [];
+            async function loadAdminOrders() {
+                const tbody = document.getElementById('admin-orders-tbody');
+                const countBadge = document.getElementById('orders-count');
+                try {
+                    const res = await fetch(`${API_BASE_URL}/order/get`, { credentials: 'include' });
+                    const data = await res.json();
+
+                    if (res.ok && data.orders && data.orders.length > 0) {
+                        allOrdersList = data.orders;
+                        renderOrdersTable(allOrdersList);
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No orders found.</td></tr>`;
+                    }
+                } catch (err) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Error loading orders.</td></tr>`;
+                }
+            }
+
+            function renderOrdersTable(orders) {
+                const tbody = document.getElementById('admin-orders-tbody');
+                const countBadge = document.getElementById('orders-count');
+                countBadge.innerText = orders.length;
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No orders match this filter.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(ord => {
+                    const date = ord.createdAt ? new Date(ord.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+                    const items = Array.isArray(ord.product) ? ord.product.join(', ') : ord.product;
+                    const address = ord.Address || 'Online Delivery';
+                    return `
+                        <tr>
+                            <td class="text-muted small">${date}</td>
+                            <td><span class="fw-bold font-monospace small">${ord._id.substring(0, 8)}...</span></td>
+                            <td>${ord.email}</td>
+                            <td class="text-truncate" style="max-width: 180px;" title="${items}">${items}</td>
+                            <td class="small text-truncate" style="max-width: 160px;" title="${address}">${address}</td>
+                            <td class="fw-bold text-success">Rs. ${Number(ord.price).toLocaleString()}</td>
+                            <td>
+                                <select class="form-select form-select-sm status-selector fw-bold" data-id="${ord._id}" style="width: 145px;">
+                                    <option value="confirmed" ${ord.status === 'confirmed' ? 'selected' : ''}>🟡 Confirmed</option>
+                                    <option value="shipping" ${ord.status === 'shipping' ? 'selected' : ''}>🔵 Shipping</option>
+                                    <option value="delivering" ${ord.status === 'delivering' ? 'selected' : ''}>🟠 Delivering</option>
+                                    <option value="delivered" ${ord.status === 'delivered' ? 'selected' : ''}>🟢 Delivered</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Status Change Event Listener
+                tbody.querySelectorAll('.status-selector').forEach(sel => {
+                    sel.addEventListener('change', async () => {
+                        const orderId = sel.getAttribute('data-id');
+                        const status = sel.value;
+                        sel.disabled = true;
+                        try {
+                            const updateRes = await fetch(`${API_BASE_URL}/order`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ orderId, status }),
+                                credentials: 'include'
+                            });
+                            if (updateRes.ok) {
+                                sel.classList.add('border-success');
+                                setTimeout(() => sel.classList.remove('border-success'), 1500);
+                            } else {
+                                alert('Failed to update status.');
+                            }
+                        } catch {
+                            alert('Network error updating status.');
+                        } finally {
+                            sel.disabled = false;
+                        }
+                    });
+                });
+            }
+
+            // Order Status Filter
+            const orderStatusFilter = document.getElementById('order-status-filter');
+            if (orderStatusFilter) {
+                orderStatusFilter.addEventListener('change', () => {
+                    const filter = orderStatusFilter.value;
+                    if (filter === 'all') {
+                        renderOrdersTable(allOrdersList);
+                    } else {
+                        renderOrdersTable(allOrdersList.filter(o => o.status === filter));
+                    }
+                });
+            }
+
+            // Load Inventory Tab
+            let currentProducts = [];
+            async function loadAdminInventory() {
+                const tbody = document.getElementById('admin-inventory-tbody');
+                try {
+                    const res = await fetch(`${API_BASE_URL}/product`, { credentials: 'include' });
+                    const data = await res.json();
+
+                    if (res.ok && data.products && data.products.length > 0) {
+                        currentProducts = data.products;
+                        tbody.innerHTML = data.products.map(p => `
+                            <tr>
+                                <td><img src="${p.img_url}" alt="${p.name}" width="50" height="50" style="object-fit: cover; border-radius: 4px;" onerror="this.src='images/hmlogo.png'"></td>
+                                <td class="fw-bold">${p.name}</td>
+                                <td><span class="badge bg-secondary">${p.category}</span></td>
+                                <td class="fw-bold text-success">Rs. ${Number(p.price).toLocaleString()}</td>
+                                <td>${p.quantity || 0}</td>
+                                <td><span class="badge ${p.status === 'available' ? 'bg-success' : 'bg-danger'}">${p.status}</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary edit-prod-btn" data-id="${p._id}">✏️ Edit</button>
+                                        <button class="btn btn-sm btn-outline-danger del-prod-btn" data-id="${p._id}">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+
+                        // Edit Button Listener
+                        tbody.querySelectorAll('.edit-prod-btn').forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                const id = btn.getAttribute('data-id');
+                                const prod = currentProducts.find(p => p._id === id);
+                                if (prod) {
+                                    document.getElementById('edit-prod-id').value = prod._id;
+                                    document.getElementById('edit-prod-name').value = prod.name;
+                                    document.getElementById('edit-prod-category').value = prod.category;
+                                    document.getElementById('edit-prod-price').value = prod.price;
+                                    document.getElementById('edit-prod-qty').value = prod.quantity || 0;
+                                    document.getElementById('edit-prod-status').value = prod.status || 'available';
+                                    document.getElementById('edit-prod-desc').value = prod.description || '';
+                                    
+                                    const imgPreview = document.getElementById('edit-preview-container');
+                                    imgPreview.innerHTML = `<img src="${prod.img_url}" alt="${prod.name}">`;
+
+                                    const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
+                                    modal.show();
+                                }
+                            });
+                        });
+
+                        // Delete Button Listener
+                        tbody.querySelectorAll('.del-prod-btn').forEach(btn => {
+                            btn.addEventListener('click', async () => {
+                                const id = btn.getAttribute('data-id');
+                                if (confirm('Are you sure you want to delete this product?')) {
+                                    btn.disabled = true;
+                                    try {
+                                        const delRes = await fetch(`${API_BASE_URL}/product`, {
+                                            method: 'DELETE',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ _id: id }),
+                                            credentials: 'include'
+                                        });
+                                        if (delRes.ok) {
+                                            loadAdminInventory();
+                                        } else {
+                                            alert('Failed to delete product.');
+                                            btn.disabled = false;
+                                        }
+                                    } catch {
+                                        alert('Network error.');
+                                        btn.disabled = false;
+                                    }
+                                }
+                            });
+                        });
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No products found in store.</td></tr>`;
+                    }
+                } catch {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Error loading inventory.</td></tr>`;
+                }
+            }
+
+            document.getElementById('orders-tab').addEventListener('click', loadAdminOrders);
+            document.getElementById('inventory-tab').addEventListener('click', loadAdminInventory);
+            document.getElementById('refresh-inventory-btn').addEventListener('click', loadAdminInventory);
+
+            // Initial load
+            loadAdminOrders();
+            loadAdminInventory();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+
+:root {
+    --primary-color: #95D600;    
+    --accent-color: #333333;
+    --dark-text: #333333;       
+    --light-bg: #FFFFFF;         
+    --dark-bg: #333333;          
+}
+
+body {
+    font-family: arial, sans-serif;
+    background-color: #f4f4f4;
+    color: var(--dark-text);
+}
+
+h1, h2, h3 {
+    color: var(--dark-text);
+}
+
+
+.navbar {
+    background-color: var(--light-bg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.header-logo {
+    height: 50px;
+    width: auto;
+}
+
+.navbar-nav .nav-link {
+    color: var(--dark-text) !important;
+    font-weight: bold;
+    margin: 0 10px;
+    padding-bottom: 5px;
+    transition: color 0.3s;
+    border-bottom: 2px solid transparent; 
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.search-bar .form-control {
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+}
+
+.search-bar .form-control:focus {
+    box-shadow: none;
+    border-color: var(--primary-color);
+}
+
+.search-bar .btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+}
+
+.search-bar .btn:hover {
+    background-color: #222;
+    color: var(--primary-color);
+}
+
+
+.hero {
+    background-color: var(--primary-color);
+    color: var(--light-bg);
+}
+
+.hero h2 {
+    color: var(--light-bg); 
+}
+
+.hero .cta-button {
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.hero .cta-button:hover {
+    background-color: #28a745; 
+    color: white;
+}
+
+.category-card {
+    background-color: var(--dark-bg);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+    border-top: 5px solid var(--primary-color);
+    border-bottom: 5px solid var(--primary-color);
+    color: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer {
+    background-color: var(--dark-text);
+    color: #cccccc;
+}
+
+/* --- HM Sports Custom Utility Buttons --- */
+.btn-hm-primary {
+    background-color: var(--accent-color);
+    color: var(--primary-color) !important;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.2s, transform 0.1s;
+}
+.btn-hm-primary:hover {
+    background-color: #222222;
+    color: var(--primary-color) !important;
+}
+
+.btn-hm-accent {
+    background-color: var(--primary-color);
+    color: var(--dark-text) !important;
+    font-weight: bold;
+    border: none;
+    transition: opacity 0.2s;
+}
+.btn-hm-accent:hover {
+    opacity: 0.9;
+    color: var(--dark-text) !important;
+}
+
+/* --- Navbar Cart Button & Auth --- */
+.nav-action-btn {
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cart-badge {
+    background-color: var(--primary-color);
+    color: var(--dark-text);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 50rem;
+}
+
+/* --- Cart Offcanvas Drawer --- */
+.offcanvas-header {
+    background-color: var(--dark-bg);
+    color: var(--light-bg);
+    border-bottom: 3px solid var(--primary-color);
+}
+.offcanvas-header .btn-close {
+    filter: invert(1);
+}
+.cart-item {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.cart-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.cart-item-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin: 0;
+    color: var(--dark-text);
+}
+.cart-item-price {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0;
+}
+.cart-remove-btn {
+    color: #dc3545;
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.cart-remove-btn:hover {
+    transform: scale(1.2);
+}
+
+/* --- Order Status Badges --- */
+.order-badge {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: capitalize;
+    display: inline-block;
+}
+.order-badge-confirmed {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.order-badge-shipping {
+    background-color: #cce5ff;
+    color: #004085;
+}
+.order-badge-delivering {
+    background-color: #ffe5d0;
+    color: #d35400;
+}
+.order-badge-delivered {
+    background-color: rgba(149, 214, 0, 0.25);
+    color: #385300;
+}
+
+/* --- Auth Modal --- */
+.modal-header {
+    border-bottom: 3px solid var(--primary-color);
+}
+.nav-tabs .nav-link {
+    color: var(--dark-text);
+    font-weight: bold;
+}
+.nav-tabs .nav-link.active {
+    color: var(--dark-text);
+    border-bottom: 3px solid var(--primary-color);
+}

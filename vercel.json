@@ -1,0 +1,51 @@
+﻿{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/user/:path*",
+      "destination": "https://hmsports-backend.onrender.com/user/:path*"
+    },
+    {
+      "source": "/product/:path*",
+      "destination": "https://hmsports-backend.onrender.com/product/:path*"
+    },
+    {
+      "source": "/product",
+      "destination": "https://hmsports-backend.onrender.com/product"
+    },
+    {
+      "source": "/buy/:path*",
+      "destination": "https://hmsports-backend.onrender.com/buy/:path*"
+    },
+    {
+      "source": "/buy",
+      "destination": "https://hmsports-backend.onrender.com/buy"
+    },
+    {
+      "source": "/order/:path*",
+      "destination": "https://hmsports-backend.onrender.com/order/:path*"
+    },
+    {
+      "source": "/order",
+      "destination": "https://hmsports-backend.onrender.com/order"
+    },
+    {
+      "source": "/webhook",
+      "destination": "https://hmsports-backend.onrender.com/webhook"
+    },
+    {
+      "source": "/health",
+      "destination": "https://hmsports-backend.onrender.com/health"
+    },
+    {
+      "source": "/api-docs/:path*",
+      "destination": "https://hmsports-backend.onrender.com/api-docs/:path*"
+    },
+    {
+      "source": "/api-docs.json",
+      "destination": "https://hmsports-backend.onrender.com/api-docs.json"
+    }
+  ]
+}
