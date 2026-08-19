@@ -1,6 +1,10 @@
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? (window.location.port === '9000' ? '' : 'http://localhost:9000')
-    : (window.BACKEND_API_URL || '');
+const API_BASE_URL = (window.__ENV__ && window.__ENV__.BACKEND_URL)
+    ? window.__ENV__.BACKEND_URL.replace(/\/$/, '')
+    : (window.BACKEND_API_URL
+        ? window.BACKEND_API_URL.replace(/\/$/, '')
+        : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? (window.location.port === '9000' ? '' : 'http://localhost:9000')
+            : ''));
 
 // --- AUTHENTICATION STATE MANAGEMENT ---
 function getCurrentUser() {

@@ -1,4 +1,4 @@
-﻿# 🚀 HM Sports Full-Stack Deployment Guide
+# 🚀 HM Sports Full-Stack Deployment Guide
 
 This guide details how to deploy the **Backend on Railway or Render** and the **Frontend on Vercel**.
 
@@ -64,9 +64,17 @@ FRONTEND_URL=https://your-frontend-app.vercel.app
 1. Log in to [Vercel Dashboard](https://vercel.com/dashboard).
 2. Click **Add New...** ➔ **Project**.
 3. Import your GitHub repository (`hammadasdfg6-glitch/ICT-project`).
-4. In `vercel.json`, ensure the proxy rewrite destination points to your live Railway (or Render) backend URL.
 
-### Step 2: Deploy & Link
+### Step 2: Add `BACKEND_URL` Environment Variable in Vercel
+Under the **Environment Variables** section in Vercel:
+
+| Variable | Value | Description |
+| :--- | :--- | :--- |
+| `BACKEND_URL` | `https://your-backend.up.railway.app` | Your Railway (or Render) backend URL |
+
+> 💡 **Super Easy**: Whenever you switch between Railway and Render, simply update this single `BACKEND_URL` environment variable in your Vercel Dashboard!
+
+### Step 3: Deploy
 1. Click **Deploy**.
 2. Once Vercel deploys (e.g. `https://hmsports.vercel.app`), update `FRONTEND_URL` in your Railway/Render variables.
 
