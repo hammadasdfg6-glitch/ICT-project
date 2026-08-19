@@ -55,6 +55,7 @@ export const addToCart = catchAsync(async(req,res,next) => {
     return res.status(201).json({
         message: 'Product Successfully Added to Cart',
         success: true,
+        status: 'success',
         cart
     })
 })

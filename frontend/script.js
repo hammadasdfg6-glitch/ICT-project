@@ -330,35 +330,25 @@ async function fetchCart() {
 
             if (!cartContainer) return;
 
-            // Fetch product details for fresh prices and images
+            // Render cart items directly from cached data
             let subtotal = 0;
-            const itemsHtml = await Promise.all(data.cart.map(async (item) => {
-                let imgUrl = 'images/hmlogo.png';
-                let price = 0;
-                try {
-                    const pRes = await fetch(`${API_BASE_URL}/product/${item._id}`, { credentials: 'include' });
-                    const pData = await pRes.json();
-                    if (pRes.ok && pData.product) {
-                        imgUrl = pData.product.img_url || imgUrl;
-                        price = Number(pData.product.price) || 0;
-                    }
-                } catch {
-                    price = Number(item.price) || 0;
-                }
-
-                subtotal += price * (item.quantity || 1);
+            const itemsHtml = data.cart.map(item => {
+                const imgUrl = item.img_url || 'images/hmlogo.png';
+                const price = Number(item.price) || 0;
+                const qty = Number(item.quantity) || 1;
+                subtotal += price * qty;
 
                 return `
                     <div class="cart-item">
                         <img src="${imgUrl}" alt="${item.name}" onerror="this.src='images/hmlogo.png'">
                         <div class="flex-grow-1">
                             <h6 class="cart-item-title">${item.name}</h6>
-                            <p class="cart-item-price">Qty: ${item.quantity || 1} × Rs. ${price.toLocaleString()}</p>
+                            <p class="cart-item-price">Qty: ${qty} × Rs. ${price.toLocaleString()}</p>
                         </div>
                         <button class="cart-remove-btn" data-id="${item._id}" title="Remove item">🗑️</button>
                     </div>
                 `;
-            }));
+            });
 
             cartContainer.innerHTML = itemsHtml.join('');
             if (cartSubtotal) cartSubtotal.innerText = `Rs. ${subtotal.toLocaleString()}`;
@@ -605,7 +595,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const data = await res.json();
 
-                if (res.ok && data.status) {
+                if (res.ok && (data.success || data.status || res.status === 201)) {
                     // Update cart badge immediately with bounce animation
                     await fetchCart();
 
@@ -613,6 +603,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     buyBtn.classList.remove('btn-dark', 'btn-hm-primary');
                     buyBtn.classList.add('btn-success', 'shadow-sm');
                     buyBtn.innerHTML = `✓ Added to Cart`;
+
+                    showToast(`${productName || 'Product'} added to your cart!`, 'success', 'Cart Updated');
 
                     setTimeout(() => {
                         buyBtn.classList.remove('btn-success', 'shadow-sm');
@@ -624,19 +616,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (authModalEl) {
                         const modal = bootstrap.Modal.getInstance(authModalEl) || new bootstrap.Modal(authModalEl);
                         modal.show();
-                    } else {
-                        alert('🔒 Please log in first to add items to your cart!');
                     }
+                    showToast('Please log in first to add items to your cart.', 'warning', 'Login Required');
                     buyBtn.innerHTML = originalHtml;
                     buyBtn.disabled = false;
                 } else {
-                    alert(`⚠️ ${data.message || 'Could not add product to cart.'}`);
+                    showToast(data.message || 'Could not add product to cart.', 'error', 'Cart Error');
                     buyBtn.innerHTML = originalHtml;
                     buyBtn.disabled = false;
                 }
             } catch (error) {
                 console.error('Error adding to cart:', error);
-                alert('⚠️ Network error: Could not reach the server.');
+                showToast('Network error: Could not reach the server.', 'error', 'Connection Error');
                 buyBtn.innerHTML = originalHtml;
                 buyBtn.disabled = false;
             }
