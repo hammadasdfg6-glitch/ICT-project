@@ -184,7 +184,7 @@ function updateNavbarAuthState() {
                         <li><span class="dropdown-item-text text-muted small">${user.email}</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="orders.html">📦 My Orders</a></li>
-                        ${user.role === 'admin' ? '<li><a class="dropdown-item text-primary fw-bold" href="admin.html">⚙️ Admin Dashboard</a></li><li><a class="dropdown-item text-success" href="/api-docs" target="_blank">📖 Swagger API Docs</a></li>' : ''}
+                        ${user.role === 'admin' ? `<li><a class="dropdown-item text-primary fw-bold" href="admin.html">⚙️ Admin Dashboard</a></li><li><a class="dropdown-item text-success" href="${API_BASE_URL || ''}/api-docs" target="_blank">📖 Swagger API Docs</a></li>` : ''}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="#" id="nav-logout-btn">🚪 Logout</a></li>
                     </ul>

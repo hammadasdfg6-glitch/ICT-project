@@ -60,7 +60,7 @@
                         <a class="nav-link active fw-bold text-primary" href="admin.html">⚙️ Admin Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bold text-success" href="/api-docs" target="_blank">📖 Swagger API Docs</a>
+                        <a class="nav-link fw-bold text-success" id="admin-nav-swagger-link" href="#" target="_blank">📖 Swagger API Docs</a>
                     </li>
                 </ul>
 
@@ -323,6 +323,11 @@
             const user = getCurrentUser();
             const guardMsg = document.getElementById('admin-guard-msg');
             const adminContent = document.getElementById('admin-content');
+
+            const swaggerLink = document.getElementById('admin-nav-swagger-link');
+            if (swaggerLink) {
+                swaggerLink.href = `${API_BASE_URL || ''}/api-docs`;
+            }
 
             if (!user || user.role !== 'admin') {
                 guardMsg.classList.remove('d-none');

@@ -1,4 +1,4 @@
-﻿import swaggerUi from "swagger-ui-express";
+import swaggerUi from "swagger-ui-express";
 
 export const swaggerSpec = {
   openapi: "3.0.0",
@@ -19,6 +19,10 @@ This REST API powers the **HM Sports** store platform featuring:
     }
   },
   servers: [
+    {
+      url: "https://hmsports-backend-production.up.railway.app",
+      description: "Live Production Server (Railway)"
+    },
     {
       url: "http://localhost:9000",
       description: "Local Development Server"
