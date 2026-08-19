@@ -6,15 +6,17 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder')
 
-export const createCheckoutSession = async (products, cacheKey, userEmail, shippingDetails = {}) => {
+export const createCheckoutSession = async (products, cacheKey, userEmail, shippingDetails = {}, originUrl = '') => {
     const total = products.reduce((acc,item) => {return acc + (Math.round(item.price * 100) * item.buyQty)}, 0 )
+
+    const frontendBase = (originUrl || process.env.FRONTEND_URL || 'http://localhost:9000').replace(/\/$/, '')
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         mode: 'payment',
         customer_email: userEmail,
-        success_url: `${process.env.FRONTEND_URL || 'http://localhost:9000'}/booking-success.html?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:9000'}/booking-cancelled.html`,
+        success_url: `${frontendBase}/booking-success.html?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${frontendBase}/booking-cancelled.html`,
         line_items: products.map((item) => ({
             price_data: {
                 currency: 'pkr',

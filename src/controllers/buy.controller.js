@@ -107,11 +107,20 @@ export const checkout = catchAsync(async (req,res,next) => {
     }
 
     const { address, city, postalCode, phone, name } = req.body || {}
+    let originUrl = req.headers.origin || ''
+    if (!originUrl && req.headers.referer) {
+        try {
+            originUrl = new URL(req.headers.referer).origin
+        } catch {
+            originUrl = ''
+        }
+    }
     const session = await createCheckoutSession(
         validProducts,
         cacheKey,
         req.user.email,
-        { address, city, postalCode, phone: phone || req.user.phone, name: name || req.user.name }
+        { address, city, postalCode, phone: phone || req.user.phone, name: name || req.user.name },
+        originUrl
     )
 
     
