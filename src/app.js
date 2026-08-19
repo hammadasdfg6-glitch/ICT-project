@@ -27,7 +27,12 @@ const allowedOrigins = [
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
+        if (
+            allowedOrigins.includes(origin) ||
+            /\.vercel\.app$/.test(origin) ||
+            /\.railway\.app$/.test(origin) ||
+            /\.onrender\.com$/.test(origin)
+        ) {
             return callback(null, true);
         }
         return callback(null, true);

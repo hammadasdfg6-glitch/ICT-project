@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # 🏆 HM SPORTS — High-Performance E-Commerce & Inventory Platform
 
@@ -223,7 +223,8 @@ npm test
 
 ## 🌐 Production Deployment
 
-* **Backend on Render**: Full 1-click configuration via [`render.yaml`](render.yaml).
+* **Backend on Railway (Current)**: Pre-configured with [`railway.json`](railway.json) and [`Procfile`](Procfile).
+* **Backend on Render (Alternative)**: 1-click configuration via [`render.yaml`](render.yaml).
 * **Frontend on Vercel**: Full edge proxy rewrite configuration via [`vercel.json`](vercel.json).
 * Refer to the comprehensive [**`DEPLOYMENT.md`**](DEPLOYMENT.md) guide for complete walkthrough instructions.
 
