@@ -237,3 +237,22 @@ footer {
     color: var(--dark-text);
     border-bottom: 3px solid var(--primary-color);
 }
+
+/* --- Cart Badge Styling & Pulse Animation --- */
+.cart-badge {
+    background-color: var(--primary-color);
+    color: #111;
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 2px 7px;
+    border-radius: 12px;
+    display: inline-block;
+    vertical-align: middle;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.25s ease;
+}
+
+.cart-badge.bump {
+    transform: scale(1.35);
+    background-color: #28a745 !important;
+    color: #ffffff !important;
+}

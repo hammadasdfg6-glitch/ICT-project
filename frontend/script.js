@@ -229,14 +229,27 @@ async function fetchCart() {
     const cartBadges = document.querySelectorAll('.cart-badge');
     const checkoutBtn = document.getElementById('cart-checkout-btn');
 
-    if (!cartContainer) return;
+    function updateBadgeDisplay(count, animate = false) {
+        cartBadges.forEach(b => {
+            b.innerText = count;
+            if (animate) {
+                b.classList.remove('bump');
+                void b.offsetWidth; // Trigger reflow
+                b.classList.add('bump');
+                setTimeout(() => b.classList.remove('bump'), 300);
+            }
+        });
+    }
 
     try {
         const res = await fetch(`${API_BASE_URL}/buy/cart`, { credentials: 'include' });
         const data = await res.json();
 
         if (res.ok && data.cart && data.cart.length > 0) {
-            cartBadges.forEach(b => b.innerText = data.cart.length);
+            const totalQty = data.cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+            updateBadgeDisplay(totalQty, true);
+
+            if (!cartContainer) return;
 
             // Fetch product details for fresh prices and images
             let subtotal = 0;
@@ -272,26 +285,30 @@ async function fetchCart() {
             if (cartSubtotal) cartSubtotal.innerText = `Rs. ${subtotal.toLocaleString()}`;
             if (checkoutBtn) checkoutBtn.disabled = false;
         } else {
-            cartBadges.forEach(b => b.innerText = '0');
-            cartContainer.innerHTML = `
-                <div class="text-center py-5 text-muted">
-                    <p class="fs-4 mb-1">🛒</p>
-                    <p class="mb-3">Your cart is empty.</p>
-                    <a href="products.html" class="btn btn-sm btn-hm-primary">Explore Products</a>
-                </div>
-            `;
+            updateBadgeDisplay(0);
+            if (cartContainer) {
+                cartContainer.innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                        <p class="fs-4 mb-1">🛒</p>
+                        <p class="mb-3">Your cart is empty.</p>
+                        <a href="products.html" class="btn btn-sm btn-hm-primary">Explore Products</a>
+                    </div>
+                `;
+            }
             if (cartSubtotal) cartSubtotal.innerText = 'Rs. 0';
             if (checkoutBtn) checkoutBtn.disabled = true;
         }
     } catch (err) {
         console.error('Error loading cart:', err);
-        cartBadges.forEach(b => b.innerText = '0');
-        cartContainer.innerHTML = `
-            <div class="text-center py-4 text-muted small">
-                <p>Log in to view your saved cart items.</p>
-                <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#authModal">Login</button>
-            </div>
-        `;
+        updateBadgeDisplay(0);
+        if (cartContainer) {
+            cartContainer.innerHTML = `
+                <div class="text-center py-4 text-muted small">
+                    <p>Log in to view your saved cart items.</p>
+                    <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#authModal">Login</button>
+                </div>
+            `;
+        }
         if (cartSubtotal) cartSubtotal.innerText = 'Rs. 0';
         if (checkoutBtn) checkoutBtn.disabled = true;
     }
@@ -495,9 +512,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const productId = buyBtn.getAttribute('data-id');
             const productName = buyBtn.getAttribute('data-name');
 
-            const originalText = buyBtn.innerText;
-            buyBtn.innerText = 'Adding...';
+            const originalHtml = buyBtn.innerHTML;
             buyBtn.disabled = true;
+            buyBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...`;
 
             try {
                 const res = await fetch(`${API_BASE_URL}/buy`, {
@@ -510,33 +527,38 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await res.json();
 
                 if (res.ok && data.status) {
-                    buyBtn.innerText = 'Added ✔';
-                    buyBtn.classList.add('btn-success');
-                    fetchCart(); // Refresh cart badge and drawer
+                    // Update cart badge immediately with bounce animation
+                    await fetchCart();
+
+                    // Update button to green added state
+                    buyBtn.classList.remove('btn-dark', 'btn-hm-primary');
+                    buyBtn.classList.add('btn-success', 'shadow-sm');
+                    buyBtn.innerHTML = `✓ Added to Cart`;
+
                     setTimeout(() => {
-                        buyBtn.innerText = originalText;
-                        buyBtn.classList.remove('btn-success');
+                        buyBtn.classList.remove('btn-success', 'shadow-sm');
+                        buyBtn.innerHTML = originalHtml;
                         buyBtn.disabled = false;
-                    }, 2000);
+                    }, 1800);
                 } else if (res.status === 401) {
                     const authModalEl = document.getElementById('authModal');
                     if (authModalEl) {
-                        const modal = new bootstrap.Modal(authModalEl);
+                        const modal = bootstrap.Modal.getInstance(authModalEl) || new bootstrap.Modal(authModalEl);
                         modal.show();
                     } else {
                         alert('🔒 Please log in first to add items to your cart!');
                     }
-                    buyBtn.innerText = originalText;
+                    buyBtn.innerHTML = originalHtml;
                     buyBtn.disabled = false;
                 } else {
                     alert(`⚠️ ${data.message || 'Could not add product to cart.'}`);
-                    buyBtn.innerText = originalText;
+                    buyBtn.innerHTML = originalHtml;
                     buyBtn.disabled = false;
                 }
             } catch (error) {
                 console.error('Error adding to cart:', error);
                 alert('⚠️ Network error: Could not reach the server.');
-                buyBtn.innerText = originalText;
+                buyBtn.innerHTML = originalHtml;
                 buyBtn.disabled = false;
             }
             return;
