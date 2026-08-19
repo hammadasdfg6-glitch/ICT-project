@@ -256,3 +256,168 @@ footer {
     background-color: #28a745 !important;
     color: #ffffff !important;
 }
+
+/* --- HM Sports Custom Notification / Toast System --- */
+#hm-toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+    width: calc(100% - 48px);
+    pointer-events: none;
+}
+
+.hm-toast {
+    pointer-events: auto;
+    background: #141414;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    animation: hmToastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    border-left: 4px solid var(--primary-color);
+}
+
+.hm-toast.hm-toast-closing {
+    animation: hmToastSlideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hm-toast-success {
+    border-left-color: #95d600;
+}
+.hm-toast-success .hm-toast-icon {
+    color: #95d600;
+}
+.hm-toast-success .hm-toast-progress-bar {
+    background-color: #95d600;
+}
+
+.hm-toast-error {
+    border-left-color: #ff4d4f;
+}
+.hm-toast-error .hm-toast-icon {
+    color: #ff4d4f;
+}
+.hm-toast-error .hm-toast-progress-bar {
+    background-color: #ff4d4f;
+}
+
+.hm-toast-warning {
+    border-left-color: #faad14;
+}
+.hm-toast-warning .hm-toast-icon {
+    color: #faad14;
+}
+.hm-toast-warning .hm-toast-progress-bar {
+    background-color: #faad14;
+}
+
+.hm-toast-info {
+    border-left-color: #00d2ff;
+}
+.hm-toast-info .hm-toast-icon {
+    color: #00d2ff;
+}
+.hm-toast-info .hm-toast-progress-bar {
+    background-color: #00d2ff;
+}
+
+.hm-toast-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.hm-toast-content {
+    flex-grow: 1;
+}
+
+.hm-toast-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    margin-bottom: 2px;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+.hm-toast-message {
+    font-size: 0.85rem;
+    color: #cccccc;
+    margin: 0;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.hm-toast-close {
+    background: transparent;
+    border: none;
+    color: #888888;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.hm-toast-close:hover {
+    color: #ffffff;
+}
+
+.hm-toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+.hm-toast-progress-bar {
+    height: 100%;
+    width: 100%;
+    transform-origin: left center;
+    animation: hmToastProgress linear forwards;
+}
+
+@keyframes hmToastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes hmToastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(30px) scale(0.92);
+    }
+}
+
+@keyframes hmToastProgress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}

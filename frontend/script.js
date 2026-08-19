@@ -6,6 +6,85 @@ const API_BASE_URL = (window.__ENV__ && window.__ENV__.BACKEND_URL)
             ? (window.location.port === '9000' ? '' : 'http://localhost:9000')
             : ''));
 
+// --- HM SPORTS CUSTOM THEME TOAST NOTIFICATION SYSTEM ---
+function showToast(message, type = 'info', title = '') {
+    let container = document.getElementById('hm-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'hm-toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `hm-toast hm-toast-${type}`;
+
+    let icon = 'ℹ️';
+    let defaultTitle = 'Notification';
+    if (type === 'success') {
+        icon = '🏆';
+        defaultTitle = 'Success';
+    } else if (type === 'error') {
+        icon = '⚠️';
+        defaultTitle = 'Notice';
+    } else if (type === 'warning') {
+        icon = '🔒';
+        defaultTitle = 'Action Required';
+    }
+
+    const duration = 3800; // ms
+
+    toast.innerHTML = `
+        <div class="hm-toast-icon">${icon}</div>
+        <div class="hm-toast-content">
+            <div class="hm-toast-title">${title || defaultTitle}</div>
+            <p class="hm-toast-message">${message}</p>
+        </div>
+        <button class="hm-toast-close" aria-label="Close">&times;</button>
+        <div class="hm-toast-progress">
+            <div class="hm-toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    let isClosed = false;
+    function closeToast() {
+        if (isClosed) return;
+        isClosed = true;
+        toast.classList.add('hm-toast-closing');
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+    }
+
+    const closeBtn = toast.querySelector('.hm-toast-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeToast);
+
+    const timer = setTimeout(closeToast, duration);
+    toast.addEventListener('mouseenter', () => {
+        const bar = toast.querySelector('.hm-toast-progress-bar');
+        if (bar) bar.style.animationPlayState = 'paused';
+        clearTimeout(timer);
+    });
+    toast.addEventListener('mouseleave', () => {
+        const bar = toast.querySelector('.hm-toast-progress-bar');
+        if (bar) bar.style.animationPlayState = 'running';
+        setTimeout(closeToast, 1200);
+    });
+}
+
+// Global exposure & smart alert replacement
+window.showToast = showToast;
+window.alert = function (message) {
+    if (typeof message === 'string' && (message.includes('success') || message.includes('Success') || message.includes('created') || message.includes('Updated') || message.includes('Thank you') || message.includes('🎉') || message.includes('✔'))) {
+        showToast(message, 'success');
+    } else if (typeof message === 'string' && (message.includes('error') || message.includes('Failed') || message.includes('Error') || message.includes('Invalid') || message.includes('⚠️'))) {
+        showToast(message, 'error');
+    } else {
+        showToast(message, 'warning');
+    }
+};
+
 // --- AUTHENTICATION STATE MANAGEMENT ---
 function getCurrentUser() {
     try {
@@ -154,13 +233,13 @@ function attachShippingFormListener() {
                 if (res.ok && data.url) {
                     window.location.href = data.url;
                 } else {
-                    alert(`⚠️ ${data.message || 'Unable to start checkout session.'}`);
+                    showToast(data.message || 'Unable to start checkout session.', 'error', 'Checkout Error');
                     submitBtn.innerText = originalText;
                     submitBtn.disabled = false;
                 }
             } catch (err) {
                 console.error('Checkout error:', err);
-                alert('⚠️ Network error during checkout.');
+                showToast('Network error: Could not reach the checkout server.', 'error', 'Connection Error');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
             }
@@ -610,7 +689,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         authModal.show();
                     }
                 }
-                alert('ℹ️ Please log in or sign up before checking out.');
+                showToast('Please log in or sign up before checking out.', 'warning', 'Login Required');
                 return;
             }
 
@@ -653,13 +732,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const modal = bootstrap.Modal.getInstance(modalEl);
                         if (modal) modal.hide();
                     }
+                    showToast(`Welcome back, ${data.user.name || 'Champion'}!`, 'success', 'Logged In');
                     fetchCart();
-                    window.location.reload();
+                    setTimeout(() => window.location.reload(), 800);
                 } else {
                     if (errorMsg) {
                         errorMsg.innerText = data.message || 'Invalid credentials.';
                         errorMsg.classList.remove('d-none');
                     }
+                    showToast(data.message || 'Invalid credentials.', 'error', 'Login Failed');
                 }
             } catch (err) {
                 console.error('Login error:', err);
@@ -667,6 +748,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     errorMsg.innerText = 'Network error connecting to server.';
                     errorMsg.classList.remove('d-none');
                 }
+                showToast('Network error connecting to server.', 'error', 'Connection Error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Login';
@@ -700,7 +782,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    alert('🎉 Account created successfully! Please login with your credentials.');
+                    showToast('Account created successfully! Please log in with your credentials.', 'success', 'Registration Complete');
                     // Switch to login tab
                     const loginTab = document.getElementById('login-tab');
                     if (loginTab) loginTab.click();
@@ -710,6 +792,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         errorMsg.innerText = data.message || 'Registration failed.';
                         errorMsg.classList.remove('d-none');
                     }
+                    showToast(data.message || 'Registration failed.', 'error', 'Registration Error');
                 }
             } catch (err) {
                 console.error('Register error:', err);
@@ -717,6 +800,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     errorMsg.innerText = 'Network error connecting to server.';
                     errorMsg.classList.remove('d-none');
                 }
+                showToast('Network error connecting to server.', 'error', 'Connection Error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Sign Up';
@@ -739,7 +823,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             submitBtn.disabled = true;
 
             setTimeout(() => {
-                alert(`Thank you, ${name}!\n\nWe have received your message from ${email}.\nOur team will contact you within 24 hours.`);
+                showToast(`Thank you, ${name}! We have received your message and will respond within 24 hours.`, 'success', 'Message Received');
                 contactForm.reset(); 
                 submitBtn.innerText = "Message Sent!";
                 submitBtn.classList.add('btn-success'); 

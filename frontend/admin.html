@@ -535,12 +535,13 @@
                             });
                             if (updateRes.ok) {
                                 sel.classList.add('border-success');
+                                showToast(`Order ${orderId.substring(0, 8)} status updated to ${status.toUpperCase()}`, 'success', 'Order Updated');
                                 setTimeout(() => sel.classList.remove('border-success'), 1500);
                             } else {
-                                alert('Failed to update status.');
+                                showToast('Failed to update order status.', 'error', 'Update Error');
                             }
                         } catch {
-                            alert('Network error updating status.');
+                            showToast('Network error updating order status.', 'error', 'Connection Error');
                         } finally {
                             sel.disabled = false;
                         }
@@ -625,13 +626,14 @@
                                             credentials: 'include'
                                         });
                                         if (delRes.ok) {
+                                            showToast('Product successfully removed from store.', 'success', 'Product Deleted');
                                             loadAdminInventory();
                                         } else {
-                                            alert('Failed to delete product.');
+                                            showToast('Failed to delete product.', 'error', 'Delete Error');
                                             btn.disabled = false;
                                         }
                                     } catch {
-                                        alert('Network error.');
+                                        showToast('Network error deleting product.', 'error', 'Connection Error');
                                         btn.disabled = false;
                                     }
                                 }
