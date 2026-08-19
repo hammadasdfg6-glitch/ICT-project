@@ -1,5 +1,6 @@
-﻿// HM Sports Runtime Environment Configuration
-window.__ENV__ = window.__ENV__ || {
-    // Leave empty to auto-detect localhost or use Vercel proxy with BACKEND_URL env variable
+﻿// HM Sports Runtime Configuration
+// When deployed on Vercel, enter your Railway (or Render) backend URL below:
+// Example: BACKEND_URL: "https://your-service.up.railway.app"
+window.__ENV__ = {
     BACKEND_URL: ""
 };
