@@ -9,6 +9,11 @@
                           "destination":  "https://hmsports-backend-production.up.railway.app/api-docs/",
                           "permanent":  false,
                           "source":  "/api-docs/(.*)"
+                      },
+                      {
+                          "destination":  "https://hmsports-backend-production.up.railway.app/health",
+                          "permanent":  false,
+                          "source":  "/health"
                       }
                   ],
     "trailingSlash":  false,
