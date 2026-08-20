@@ -29,16 +29,16 @@ export const addToCart = catchAsync(async(req,res,next) => {
     const cached = await redis.lrange(cacheKey, 0, -1)
     let cart = cached && 0 < cached.length ? cached.map(item => JSON.parse(item)) : []
 
-    const existingIndex = cart.findIndex(item => item._id === product._id.toString())
-    if(-1 < existingIndex){
-        const newQty = cart[existingIndex].quantity + Number(quantity)
+    const index = cart.findIndex(item => item._id === product._id.toString())
+    if(-1 < index){
+        const newQty = cart[index].quantity + Number(quantity)
         if(newQty > product.quantity){
             return next(new appError(`Cannot add more. Only ${product.quantity} items available in stock.`, 'Bad Request', 400))
         }
-        cart[existingIndex].quantity = newQty
-        cart[existingIndex].price = product.price
-        cart[existingIndex].name = product.name
-        cart[existingIndex].img_url = product.img_url
+        cart[index].quantity = newQty
+        cart[index].price = product.price
+        cart[index].name = product.name
+        cart[index].img_url = product.img_url
     } else {
         cart.push({
             _id: product._id.toString(),
