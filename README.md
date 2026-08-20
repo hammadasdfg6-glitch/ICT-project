@@ -6,13 +6,14 @@
 [![Express](https://img.shields.io/badge/Express-v5.2-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-v9.9-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Redis](https://img.shields.io/badge/Redis_Cloud-v6.0-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![Joi Validation](https://img.shields.io/badge/Joi-Schema_Validation-F9A01B?style=for-the-badge&logo=javascript&logoColor=black)](https://joi.dev/)
 [![Stripe](https://img.shields.io/badge/Stripe_Payments-v22.5-635BFF?style=for-the-badge&logo=stripe&logoColor=white)](https://stripe.com/)
 [![Cloudinary](https://img.shields.io/badge/Cloudinary-Media_CDN-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-43_Tests_Passed-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-52_Tests_Passed-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![OpenAPI/Swagger](https://img.shields.io/badge/Swagger-OpenAPI_3.0-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:9000/api-docs)
 
 <p align="center">
-  A full-stack, enterprise-ready sports goods e-commerce platform and inventory management system engineered with <b>Express 5, MongoDB Atlas, Redis caching, Cloudinary media delivery, Stripe Checkout</b>, and interactive <b>Swagger API Documentation</b>.
+  A full-stack, enterprise-ready sports goods e-commerce platform and inventory management system engineered with <b>Express 5, MongoDB Atlas, Redis caching, Cloudinary media delivery, Stripe Checkout</b>, <b>Joi Schema Validation</b>, and interactive <b>Swagger API Documentation</b>.
 </p>
 
 [Explore API Docs](http://localhost:9000/api-docs) • [View Deployment Guide](DEPLOYMENT.md) • [Report Issue](https://github.com/hammadasdfg6-glitch/ICT-project/issues)
@@ -38,6 +39,7 @@
 * **Order Status Lifecycle Tracking**: Interactive fulfillment dropdowns (*🟡 Confirmed ➔ 🔵 Shipping ➔ 🟠 Delivering ➔ 🟢 Delivered*) with instant Redis customer cache invalidation.
 
 ### 🛡️ Security & Architecture
+* **Strict Joi Schema Validation**: Every incoming request body, route parameter, and query string is strictly validated and sanitized before controller execution.
 * **HTTP-Only JWT Authentication**: Multi-cookie clearing on logout (`token`, `refreshToken`, `accessToken`, `jwt`) with environment-aware `SameSite=None; Secure=true` for cross-origin deployments.
 * **Password Encryption**: Secure password hashing with `bcrypt` (10 salt rounds).
 * **Idempotent Order Creation**: Unique `stripeSessionId` verification prevents duplicate orders and double-decrementing stock.
@@ -51,7 +53,8 @@
 flowchart TD
     Client["🌐 Web Browser (Desktop & Mobile)"] -->|HTTPS / REST API| Express["⚡ Express 5 Application Server"]
     
-    subgraph Security ["Security & Auth Middleware"]
+    subgraph Security ["Security & Validation Middleware"]
+        Express --> JoiVal["🛡️ Joi Schema Validation & Sanitizer"]
         Express --> Auth["🔐 JWT Cookie & Role Verifier"]
         Express --> Cors["🛡️ CORS & Helmet Security"]
     end
@@ -66,6 +69,25 @@ flowchart TD
         Express -->|Image CDN Hosting| Cloudinary["☁️ Cloudinary Storage"]
     end
 ```
+
+---
+
+## 🛡️ Joi Request Payload & Parameter Validation
+
+Every incoming endpoint is guarded by dedicated Joi validation middleware (`src/middlewares/validate.middleware.js`):
+
+| Schema | File | Validated Rules & Constraints |
+| :--- | :--- | :--- |
+| `registerCustomerSchema` | `src/validations/user.validation.js` | `email` (valid email format, required), `password` (min 6 chars, required), `name`, `phone`. |
+| `registerAdminSchema` | `src/validations/user.validation.js` | `email` (valid email, required), `password` (min 6 chars, required), `adminSecret` (required), `name`, `phone`. |
+| `loginSchema` | `src/validations/user.validation.js` | `email` (valid email, required), `password` (required). |
+| `addProductSchema` | `src/validations/product.validation.js` | `name` (min 2, max 120, required), `category` (required), `price` (positive number, required), `quantity` (integer >= 0, required), `status` (`available` \| `Out of Stock`), `description`, `img_url`. |
+| `updateProductSchema` | `src/validations/product.validation.js` | `_id` (24-hex ObjectId, required), `price` (> 0), `quantity` (>= 0), `name`, `category`, `status`, `description`, `img_url`. |
+| `deleteProductSchema` | `src/validations/product.validation.js` | `_id` (24-hex ObjectId, required). |
+| `productIdParamSchema` | `src/validations/product.validation.js` | `id` (24-hex ObjectId URL parameter, required). |
+| `addToCartSchema` | `src/validations/buy.validation.js` | `_id` or `id` or `name` (at least 1 required), `quantity` (integer >= 1, default 1). |
+| `checkoutSchema` | `src/validations/buy.validation.js` | `name`, `phone`, `address`, `city`, `postalCode`. |
+| `markOrderSchema` | `src/validations/order.validation.js` | `orderId` (24-hex ObjectId, required), `status` (`confirmed` \| `shipping` \| `delivering` \| `delivered` \| `cancelled`, required). |
 
 ---
 
@@ -84,31 +106,35 @@ ICT-Project/
 │   ├── index.html                # Homepage & Hero storefront
 │   ├── orders.html               # Customer order history & tracking
 │   ├── products.html & products.css # Product catalog with filter drawer
+│   ├── config.js                 # Dynamic runtime backend URL configuration
 │   ├── script.js                 # Global frontend state, cart & auth manager
-│   └── style.css                 # Custom design system & Bootstrap styling
+│   ├── style.css                 # Custom design system & Bootstrap styling
+│   └── vercel.json               # Vercel static routing, cleanUrls & API redirects
 ├── src/                          # Backend API Source
 │   ├── config/                   # Cloudinary, Database, Redis & Swagger configs
 │   ├── controllers/              # Route controllers (Buy, Checkout, Order, Product, User, Webhook)
-│   ├── middlewares/              # JWT Auth verification & Global Error Handler
+│   ├── middlewares/              # JWT Auth, Joi Validator & Global Error Handler
 │   ├── models/                   # Mongoose schemas (Orders, Product, Users)
 │   ├── routes/                   # Modular Express routers
 │   ├── utils/                    # appError & catchAsync helper utilities
+│   ├── validations/              # Joi request body, query & param validation schemas
 │   └── app.js                    # Express app initialization & middleware stack
-├── tests/                        # Vitest Automated Test Suite (43 Tests)
+├── tests/                        # Vitest Automated Test Suite (52 Tests)
 │   ├── setup.js                  # Test database & lifecycle hooks
 │   ├── buy.test.js               # Cart & Stripe checkout tests
 │   ├── order.test.js             # Order history & admin status update tests
 │   ├── product.test.js           # Catalog queries, search & CRUD tests
 │   ├── swagger.test.js           # OpenAPI 3.0 specification tests
 │   ├── user.test.js              # Authentication, cookie & profile tests
+│   ├── validation.test.js        # Joi schema validation & constraint tests
 │   └── webhook.test.js           # Stripe webhook handler tests
 ├── .env.example                  # Environment variables template
 ├── .gitignore                    # Production git ignore rules
-├── DEPLOYMENT.md                 # Complete Render & Vercel deployment guide
+├── DEPLOYMENT.md                 # Complete Railway, Render & Vercel deployment guide
 ├── package.json                  # Dependencies & scripts
-├── render.yaml                   # 1-Click Render infrastructure blueprint
+├── Procfile                      # Railway process file
+├── railway.json                  # Railway deployment blueprint
 ├── server.js                     # Server entrypoint (Port 9000)
-├── vercel.json                   # Vercel static routing & API proxy rewrites
 └── vitest.config.js              # Vitest runner configuration
 ```
 
@@ -118,27 +144,27 @@ ICT-Project/
 
 Interactive documentation available at: **`http://localhost:9000/api-docs`**
 
-| Module | Method | Endpoint | Description | Auth Required |
-| :--- | :---: | :--- | :--- | :---: |
-| **Auth** | `POST` | `/user/register-customer` | Register customer account | No |
-| **Auth** | `POST` | `/user/register-admin` | Register admin with `ADMIN_SECRET` | No |
-| **Auth** | `POST` | `/user/login` | Login user & set auth cookie | No |
-| **Auth** | `POST` | `/user/logout` | Purge all auth cookies | No |
-| **Auth** | `GET` | `/user/me` | Get current logged-in profile | 🔒 Yes |
-| **Catalog** | `GET` | `/product` | List products with filters & Redis cache | No |
-| **Catalog** | `GET` | `/product/:id` | Get single product by ID | No |
-| **Catalog** | `POST` | `/product` | Add product with Cloudinary photo | 👑 Admin |
-| **Catalog** | `PATCH` | `/product` | Update product details & image | 👑 Admin |
-| **Catalog** | `DELETE` | `/product` | Delete product & flush cache | 👑 Admin |
-| **Cart** | `POST` | `/buy` | Add item to customer Redis cart | 🔒 Yes |
-| **Cart** | `GET` | `/buy/cart` | Get active cart items | 🔒 Yes |
-| **Cart** | `DELETE` | `/buy/:id` | Remove specific item from cart | 🔒 Yes |
-| **Checkout** | `PATCH` | `/buy/checkout` | Create Stripe Hosted Checkout Session | 🔒 Yes |
-| **Checkout** | `GET` | `/buy/confirm-session`| Verify Stripe return & create order | No |
-| **Orders** | `GET` | `/order` | Get customer purchase history | 🔒 Yes |
-| **Orders** | `GET` | `/order/get` | Get all store orders with status filter | 👑 Admin |
-| **Orders** | `PATCH` | `/order` | Update order fulfillment status | 👑 Admin |
-| **Webhook** | `POST` | `/webhook` | Stripe automated event webhook | Stripe Signature |
+| Module | Method | Endpoint | Description | Validation | Auth Required |
+| :--- | :---: | :--- | :--- | :--- | :---: |
+| **Auth** | `POST` | `/user/register-customer` | Register customer account | Joi: Email, Password (min 6) | No |
+| **Auth** | `POST` | `/user/register-admin` | Register admin with `ADMIN_SECRET` | Joi: Email, Password, Secret | No |
+| **Auth** | `POST` | `/user/login` | Login user & set auth cookie | Joi: Email, Password | No |
+| **Auth** | `POST` | `/user/logout` | Purge all auth cookies | None | No |
+| **Auth** | `GET` | `/user/me` | Get current logged-in profile | JWT Verification | 🔒 Yes |
+| **Catalog** | `GET` | `/product` | List products with filters & Redis cache | Query params | No |
+| **Catalog** | `GET` | `/product/:id` | Get single product by ID | Joi: ObjectId Param | No |
+| **Catalog** | `POST` | `/product` | Add product with Cloudinary photo | Joi: Multipart Body | 👑 Admin |
+| **Catalog** | `PATCH` | `/product` | Update product details & image | Joi: ObjectId & Fields | 👑 Admin |
+| **Catalog** | `DELETE` | `/product` | Delete product & flush cache | Joi: ObjectId Body | 👑 Admin |
+| **Cart** | `POST` | `/buy` | Add item to customer Redis cart | Joi: Product Identifier, Qty | 🔒 Yes |
+| **Cart** | `GET` | `/buy/cart` | Get active cart items | Session Cookie | 🔒 Yes |
+| **Cart** | `DELETE` | `/buy/:id` | Remove specific item from cart | Joi: Item ID Param | 🔒 Yes |
+| **Checkout** | `PATCH` | `/buy/checkout` | Create Stripe Hosted Checkout Session | Joi: Shipping Fields | 🔒 Yes |
+| **Checkout** | `GET` | `/buy/confirm-session`| Verify Stripe return & create order | Query Session ID | No |
+| **Orders** | `GET` | `/order` | Get customer purchase history | Session Cookie | 🔒 Yes |
+| **Orders** | `GET` | `/order/get` | Get all store orders with status filter | Joi: Status Query Filter | 👑 Admin |
+| **Orders** | `PATCH` | `/order` | Update order fulfillment status | Joi: OrderId & Status Enum | 👑 Admin |
+| **Webhook** | `POST` | `/webhook` | Stripe automated event webhook | Stripe Signature Header | Stripe Signature |
 
 ---
 
@@ -206,17 +232,18 @@ Run the full automated test suite using **Vitest**:
 npm test
 ```
 
-### Test Suite Results: `43 / 43 Passed (100%)`
+### Test Suite Results: `52 / 52 Passed (100%)`
 ```
- ✓ tests/product.test.js  (11 tests)
- ✓ tests/buy.test.js      (8 tests)
- ✓ tests/order.test.js    (9 tests)
- ✓ tests/user.test.js     (12 tests)
- ✓ tests/webhook.test.js  (1 test)
- ✓ tests/swagger.test.js  (2 tests)
+ ✓ tests/product.test.js     (11 tests)
+ ✓ tests/buy.test.js         (8 tests)
+ ✓ tests/order.test.js       (9 tests)
+ ✓ tests/user.test.js        (12 tests)
+ ✓ tests/validation.test.js  (9 tests)
+ ✓ tests/webhook.test.js     (1 test)
+ ✓ tests/swagger.test.js     (2 tests)
 
- Test Files  6 passed (6)
-      Tests  43 passed (43)
+ Test Files  7 passed (7)
+      Tests  52 passed (52)
 ```
 
 ---
@@ -225,7 +252,7 @@ npm test
 
 * **Backend on Railway (Current)**: Pre-configured with [`railway.json`](railway.json) and [`Procfile`](Procfile).
 * **Backend on Render (Alternative)**: 1-click configuration via [`render.yaml`](render.yaml).
-* **Frontend on Vercel**: Full edge proxy rewrite configuration via [`vercel.json`](vercel.json).
+* **Frontend on Vercel**: Full edge proxy routing & auto-redirects via [`frontend/vercel.json`](frontend/vercel.json).
 * Refer to the comprehensive [**`DEPLOYMENT.md`**](DEPLOYMENT.md) guide for complete walkthrough instructions.
 
 ---
